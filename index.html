@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Threox | Enterprise VAPT & Security Engineering</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #ffffff;
+    color: #1e293b;
+    line-height: 1.5;
+    overflow-x: hidden;
+  }
+
+  /* VIDEO BACKGROUND - FULLY VISIBLE, PROPER EXECUTION */
+  .video-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -2;
+    overflow: hidden;
+  }
+  .video-background video {
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    opacity: 50%;
+    transform: translate(-50%, -50%);
+    object-fit: cover;
+  }
+  
+  /* Light overlay to keep text readable while video plays underneath */
+  .video-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    opacity: 0.0; /* Adjust opacity if needed, e.g. rgba(255,255,255,0.2) for a subtle white overlay */
+    z-index: -1;
+  }
+  
+  /* Clean White Theme with Green & Blue */
+  :root {
+    --white: #ffffff;
+    --offwhite: #f9fafb;
+    --gray-50: #f8fafc;
+    --gray-100: #f1f5f9;
+    --gray-200: #e2e8f0;
+    --gray-300: #cbd5e1;
+    --gray-600: #475569;
+    --gray-700: #334155;
+    --gray-800: #1e293b;
+    --gray-900: #0f172a;
+    --green: #10b981;
+    --green-dark: #059669;
+    --blue: #3b82f6;
+    --blue-dark: #2563eb;
+    --grad: linear-gradient(135deg, #10b981, #3b82f6);
+    --grad-hover: linear-gradient(135deg, #059669, #2563eb);
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.01);
+    --border-light: 1px solid #eef2f6;
+  }
+
+  /* typography */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  /* scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--gray-100);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--green);
+    border-radius: 10px;
+  }
+
+  /* navbar clean white */
+  .navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    padding: 0 5%;
+    transition: all 0.3s ease;
+    background: transparent;
+  }
+  .navbar.scrolled {
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(12px);
+    border-bottom: var(--border-light);
+    box-shadow: var(--shadow-sm);
+  }
+  .nav-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 70px;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+  }
+  .logo-mark-img {
+    height: 40px;
+    width: auto;
+    object-fit: contain;
+  }
+  .logo-text-img {
+    height: 32px;
+    width: auto;
+    object-fit: contain;
+  }
+  .nav-links {
+    display: flex;
+    list-style: none;
+    gap: 2rem;
+    align-items: center;
+  }
+  .nav-links a {
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--gray-700);
+    transition: color 0.2s;
+  }
+  .nav-links a:hover {
+    color: var(--green);
+  }
+  .btn-outline {
+    background: transparent;
+    border: 1.5px solid var(--green);
+    color: var(--green) !important;
+    padding: 0.5rem 1.2rem;
+    border-radius: 40px;
+    font-weight: 600 !important;
+  }
+  .btn-outline:hover {
+    background: var(--green);
+    color: white !important;
+  }
+  .menu-btn {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+  }
+  .menu-btn span {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background: var(--gray-800);
+    margin: 5px 0;
+    border-radius: 2px;
+    transition: 0.3s;
+  }
+
+  /* Hero Section */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 100px 5% 80px;
+    position: relative;
+    overflow: hidden;
+    background: transparent;
+  }
+  .hero-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+  }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(16,185,129,0.12);
+    border: 1px solid rgba(16,185,129,0.25);
+    padding: 0.3rem 1rem 0.3rem 0.7rem;
+    border-radius: 40px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--green-dark);
+    margin-bottom: 1.5rem;
+    backdrop-filter: blur(4px);
+  }
+  .badge-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--green);
+    border-radius: 50%;
+    animation: pulse 1.5s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(1.2); }
+  }
+  .hero h1 {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    line-height: 1.1;
+    margin-bottom: 1.2rem;
+    color: var(--gray-900);
+  }
+  .gradient-text {
+    background: var(--grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .outline-text {
+    -webkit-text-stroke: 1.5px rgba(0, 0, 0, 1);
+    color: transparent;
+  }
+  .hero-desc {
+    font-size: 1rem;
+    color: var(--gray-600);
+    max-width: 90%;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+  }
+  .cert-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+  }
+  .cert-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    padding: 0.3rem 1rem;
+    border-radius: 40px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--gray-700);
+    backdrop-filter: blur(4px);
+  }
+  .cert-tag i {
+    color: var(--green);
+  }
+  .hero-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--grad);
+    color: white;
+    font-weight: 600;
+    padding: 0.75rem 1.8rem;
+    border-radius: 40px;
+    text-decoration: none;
+    transition: all 0.25s;
+    box-shadow: 0 4px 12px rgba(16,185,129,0.25);
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(16,185,129,0.35);
+  }
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--blue);
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .btn-secondary:hover {
+    color: var(--green);
+  }
+  .stats-card {
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(12px);
+    border-radius: 28px;
+    padding: 2rem;
+    box-shadow: var(--shadow-xl);
+    border: var(--border-light);
+  }
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--gray-200);
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 0;
+  }
+  .stat-item {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 1.2rem;
+    text-align: center;
+  }
+  .stat-number {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    background: var(--grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .stat-label {
+    font-size: 0.7rem;
+    color: var(--gray-600);
+    margin-top: 4px;
+  }
+
+  /* Section Styles - Semi-transparent to let video show through */
+  .section {
+    padding: 80px 5%;
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(2px);
+    margin: 0;
+  }
+  .container {
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+  .section-badge {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--green);
+    margin-bottom: 0.75rem;
+  }
+  .section-badge::before {
+    content: '—';
+    margin-right: 8px;
+    color: var(--green);
+  }
+  .section-title {
+    font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+    margin-bottom: 1rem;
+    color: var(--gray-900);
+  }
+  .section-subtitle {
+    font-size: 0.95rem;
+    color: var(--gray-600);
+    max-width: 600px;
+    margin-bottom: 3rem;
+  }
+
+  /* Services Grid */
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+  .service-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    border: var(--border-light);
+    border-radius: 24px;
+    padding: 2rem;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .service-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: rgba(16,185,129,0.3);
+    background: white;
+  }
+  .service-icon {
+    width: 52px;
+    height: 52px;
+    background: rgba(16,185,129,0.1);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    color: var(--green);
+    margin-bottom: 1.2rem;
+  }
+  .service-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+  .service-desc {
+    font-size: 0.85rem;
+    color: var(--gray-600);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+  .service-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .service-tag {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.7rem;
+    background: var(--gray-100);
+    border-radius: 20px;
+    color: var(--gray-700);
+  }
+  .service-arrow {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+    width: 32px;
+    height: 32px;
+    border: 1px solid var(--gray-200);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gray-400);
+    transition: all 0.2s;
+  }
+  .service-card:hover .service-arrow {
+    border-color: var(--green);
+    color: var(--green);
+    transform: translate(3px, -3px);
+  }
+
+  /* Impact Section */
+  .impact-section {
+    background: rgba(248, 250, 252, 0.92);
+    backdrop-filter: blur(4px);
+  }
+  .impact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: center;
+  }
+  .counter-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1px;
+    background: var(--gray-200);
+    border-radius: 20px;
+    overflow: hidden;
+    margin: 2rem 0;
+  }
+  .counter-cell {
+    background: white;
+    padding: 1.5rem;
+    text-align: center;
+  }
+  .counter-number {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 2.5rem;
+    font-weight: 800;
+    background: var(--grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .vuln-card {
+    background: white;
+    border-radius: 24px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-md);
+    border: var(--border-light);
+  }
+  .vuln-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--gray-800);
+  }
+  .vuln-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.8rem 0;
+    border-bottom: 1px solid var(--gray-100);
+  }
+  .vuln-label {
+    flex: 1;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+  .vuln-bar {
+    flex: 2;
+    height: 6px;
+    background: var(--gray-100);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .vuln-fill {
+    height: 100%;
+    border-radius: 10px;
+    width: 0%;
+  }
+  .vuln-count {
+    min-width: 45px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--gray-700);
+  }
+  .checklist {
+    list-style: none;
+    margin-top: 1.5rem;
+  }
+  .checklist li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.85rem;
+    color: var(--gray-600);
+    margin-bottom: 0.8rem;
+  }
+  .checklist li i {
+    color: var(--green);
+    font-size: 0.9rem;
+  }
+
+  /* Expertise */
+  .expertise-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+  .expert-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    border: var(--border-light);
+    border-radius: 20px;
+    padding: 1.5rem;
+    transition: all 0.2s;
+  }
+  .expert-card:hover {
+    border-color: var(--blue);
+    box-shadow: var(--shadow-md);
+    background: white;
+  }
+  .expert-icon {
+    font-size: 1.8rem;
+    color: var(--green);
+    margin-bottom: 1rem;
+  }
+  .expert-title {
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+  .expert-text {
+    font-size: 0.85rem;
+    color: var(--gray-600);
+    line-height: 1.5;
+  }
+
+  /* Compliance */
+  .compliance-bar {
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(8px);
+    border-top: var(--border-light);
+    border-bottom: var(--border-light);
+    padding: 2rem 5%;
+  }
+  .compliance-wrap {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .compliance-label {
+    font-weight: 600;
+    color: var(--gray-700);
+    font-size: 0.8rem;
+  }
+  .compliance-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+  }
+  .compliance-item {
+    background: white;
+    padding: 0.3rem 1rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--gray-700);
+    border: 1px solid var(--gray-200);
+  }
+
+  /* Process Steps */
+  .process-steps {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1rem;
+    margin-top: 3rem;
+  }
+  .process-step {
+    text-align: center;
+  }
+  .step-number {
+    width: 48px;
+    height: 48px;
+    background: var(--grad);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    font-weight: 700;
+    color: white;
+  }
+  .step-title {
+    font-weight: 700;
+    font-size: 0.9rem;
+    margin-bottom: 0.3rem;
+  }
+  .step-desc {
+    font-size: 0.75rem;
+    color: var(--gray-600);
+  }
+
+  /* Contact Form - FIXED */
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 3rem;
+  }
+  .contact-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    border: var(--border-light);
+    border-radius: 24px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    transition: all 0.2s;
+  }
+  .contact-card:hover {
+    border-color: var(--green);
+    background: white;
+  }
+  .contact-icon {
+    width: 44px;
+    height: 44px;
+    background: rgba(16,185,129,0.1);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--green);
+    font-size: 1.1rem;
+  }
+  .form-card {
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(8px);
+    border: var(--border-light);
+    border-radius: 24px;
+    padding: 2rem;
+    box-shadow: var(--shadow-md);
+  }
+  .form-group {
+    margin-bottom: 1rem;
+  }
+  .form-group label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--gray-700);
+    margin-bottom: 0.3rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+    padding: 0.7rem 1rem;
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+    background: white;
+  }
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    outline: none;
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px rgba(16,185,129,0.1);
+  }
+  .form-group .error-msg {
+    color: #ef4444;
+    font-size: 0.75rem;
+    margin-top: 4px;
+    display: none;
+  }
+  .form-group.error input,
+  .form-group.error select,
+  .form-group.error textarea {
+    border-color: #ef4444;
+  }
+  .form-group.error .error-msg {
+    display: block;
+  }
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  .submit-btn {
+    width: 100%;
+    background: var(--grad);
+    color: white;
+    font-weight: 600;
+    padding: 0.85rem;
+    border: none;
+    border-radius: 40px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+  }
+  .submit-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(16,185,129,0.3);
+  }
+  .submit-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+  }
+
+  /* Toast Notification */
+  .toast {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    padding: 16px 28px;
+    background: #1a1a1a;
+    border-radius: 12px;
+    border-left: 4px solid #10b981;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transform: translateY(120px);
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 9999;
+    font-weight: 500;
+    max-width: 90%;
+    color: #e0e0e0;
+  }
+  .toast.show {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  .toast i {
+    color: #10b981;
+    font-size: 1.4rem;
+  }
+  .toast.error {
+    border-left-color: #ef4444;
+  }
+  .toast.error i {
+    color: #ef4444;
+  }
+
+  /* Footer */
+  .footer {
+    background: var(--gray-900);
+    color: var(--gray-300);
+    padding: 3rem 5% 2rem;
+    margin-top: 0;
+  }
+  .footer-container {
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr 1fr;
+    gap: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .footer-logo .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1rem;
+  }
+  .footer-logo .logo-mark-img {
+    height: 36px;
+  }
+  .footer-logo .logo-text-img {
+    height: 28px;
+  }
+  .footer p {
+    font-size: 0.8rem;
+    color: var(--gray-400);
+    margin-top: 1rem;
+  }
+  .footer-col h4 {
+    font-size: 0.9rem;
+    color: white;
+    margin-bottom: 1rem;
+  }
+  .footer-col ul {
+    list-style: none;
+  }
+  .footer-col ul li {
+    margin-bottom: 0.5rem;
+  }
+  .footer-col ul a {
+    text-decoration: none;
+    font-size: 0.8rem;
+    color: var(--gray-400);
+    transition: color 0.2s;
+  }
+  .footer-col ul a:hover {
+    color: var(--green);
+  }
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 1.5rem;
+    font-size: 0.75rem;
+    color: var(--gray-500);
+  }
+  .social-links {
+    display: flex;
+    gap: 1rem;
+  }
+  .social-links a {
+    color: var(--gray-400);
+    transition: color 0.2s;
+  }
+  .social-links a:hover {
+    color: var(--green);
+  }
+
+  /* Reveal Animation */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.6s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (max-width: 1024px) {
+    .hero-container, .impact-grid, .contact-grid { grid-template-columns: 1fr; }
+    .services-grid { grid-template-columns: 1fr; }
+    .expertise-grid { grid-template-columns: repeat(2, 1fr); }
+    .process-steps { grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+  }
+  @media (max-width: 768px) {
+    .nav-links { display: none; position: fixed; top: 70px; left: 0; right: 0; background: white; flex-direction: column; padding: 2rem; gap: 1.5rem; box-shadow: var(--shadow-lg); border-bottom: var(--border-light); }
+    .nav-links.open { display: flex; }
+    .menu-btn { display: block; }
+    .expertise-grid, .process-steps, .footer-grid, .form-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="video-background">
+  <video autoplay muted loop playsinline id="bgVideo">
+    <source src="background.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+</div>
+<div class="video-overlay"></div>
+
+<nav class="navbar" id="navbar">
+  <div class="nav-container">
+    <a href="#" class="logo">
+      <img src="solo_logo.jpeg" alt="Threox Icon" class="logo-mark-img" onerror="this.style.display='none';">
+      <img src="company_text.jpeg" alt="Threox" class="logo-text-img" onerror="this.style.display='none';">
+    </a>
+    <button class="menu-btn" id="menuBtn"><span></span><span></span><span></span></button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#home">Home</a></li><li><a href="#services">Services</a></li><li><a href="#impact">Impact</a></li>
+      <li><a href="#expertise">Expertise</a></li><li><a href="#contact">Contact</a></li>
+      <li><a href="#contact" class="btn-outline">Get Audit →</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main>
+  <section class="hero" id="home">
+    <div class="hero-container">
+      <div>
+        <div class="hero-badge"><span class="badge-dot"></span> Enterprise VAPT Specialists</div>
+        <h1>Modern <span class="gradient-text">Security</span><br>for the <span class="outline-text">Digital</span><br>Enterprise.</h1>
+        <p class="hero-desc">EWPTX & CEH v12 certified penetration testing across web, API, mobile, and source code — with zero false-positive SLA and full remediation support.</p>
+        <div class="cert-tags"><span class="cert-tag"><i class="fas fa-certificate"></i> EWPTX Certified</span><span class="cert-tag"><i class="fas fa-shield-alt"></i> CEH v12</span><span class="cert-tag"><i class="fas fa-mobile-alt"></i> Mobile Expert</span><span class="cert-tag"><i class="fas fa-chart-line"></i> 300+ Findings FY24</span></div>
+        <div class="hero-buttons"><a href="#contact" class="btn-primary"><i class="fas fa-lock"></i> Start Assessment</a><a href="#services" class="btn-secondary">Explore Services <i class="fas fa-arrow-right"></i></a></div>
+      </div>
+      <div class="stats-card">
+        <div class="stats-grid">
+          <div class="stat-item"><span class="stat-number">300+</span><div class="stat-label">Critical Findings</div></div>
+          <div class="stat-item"><span class="stat-number">100%</span><div class="stat-label">SLA Adherence</div></div>
+          <div class="stat-item"><span class="stat-number">98%</span><div class="stat-label">Fix Rate</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="services" class="section"><div class="container"><div class="section-badge">What We Do</div><h2 class="section-title">Full-Spectrum <span class="gradient-text">Security Testing</span></h2><p class="section-subtitle">From web apps to mobile and source code — every surface, zero blind spots.</p>
+    <div class="services-grid"><div class="service-card"><div class="service-icon"><i class="fas fa-globe"></i></div><div class="service-arrow"><i class="fas fa-arrow-right"></i></div><div class="service-title">Web Application VAPT</div><p class="service-desc">Deep manual testing covering OWASP Top 10, business logic flaws, injection attacks.</p><div class="service-tags"><span class="service-tag">SQLi / XSS</span><span class="service-tag">CSRF</span><span class="service-tag">SSRF</span></div></div>
+    <div class="service-card"><div class="service-icon"><i class="fas fa-plug"></i></div><div class="service-arrow"><i class="fas fa-arrow-right"></i></div><div class="service-title">API Security Testing</div><p class="service-desc">Comprehensive REST and GraphQL assessment: BOLA, BFLA, rate limiting bypass.</p><div class="service-tags"><span class="service-tag">REST / GraphQL</span><span class="service-tag">BOLA</span><span class="service-tag">OWASP API Top 10</span></div></div>
+    <div class="service-card"><div class="service-icon"><i class="fas fa-mobile-alt"></i></div><div class="service-arrow"><i class="fas fa-arrow-right"></i></div><div class="service-title">Android & iOS VAPT</div><p class="service-desc">Static and dynamic analysis, insecure data storage, reverse engineering.</p><div class="service-tags"><span class="service-tag">SAST / DAST</span><span class="service-tag">Frida</span><span class="service-tag">Reverse Eng.</span></div></div>
+    <div class="service-card"><div class="service-icon"><i class="fas fa-code"></i></div><div class="service-arrow"><i class="fas fa-arrow-right"></i></div><div class="service-title">Source Code Review</div><p class="service-desc">Line-by-line manual code audit across Java, Kotlin, Swift, JavaScript, Python.</p><div class="service-tags"><span class="service-tag">Java/Kotlin</span><span class="service-tag">Swift</span><span class="service-tag">JS/Python</span></div></div></div></div></section>
+
+  <section id="impact" class="impact-section section"><div class="container"><div class="impact-grid"><div><div class="section-badge">Proven Track Record</div><h2 class="section-title">Numbers That <span class="gradient-text">Speak</span></h2><p class="section-subtitle">Last financial year results from real client engagements across fintech, healthcare, and enterprise SaaS.</p>
+    <div class="counter-grid"><div class="counter-cell"><span class="counter-number" data-target="300">0</span><div class="stat-label">Critical findings</div></div><div class="counter-cell"><span class="counter-number" data-target="98">0</span><div class="stat-label">% remediation rate</div></div><div class="counter-cell"><span class="counter-number" data-target="142">0</span><div class="stat-label">Web & API vulns</div></div><div class="counter-cell"><span class="counter-number" data-target="98">0</span><div class="stat-label">Mobile vulns</div></div></div>
+    <ul class="checklist"><li><i class="fas fa-check-circle"></i> Every finding backed by working PoC</li><li><i class="fas fa-check-circle"></i> Dedicated consultant throughout engagement</li><li><i class="fas fa-check-circle"></i> Post-fix re-testing included at no cost</li></ul></div>
+    <div class="vuln-card"><div class="vuln-header"><i class="fas fa-chart-simple"></i> FY24 Vulnerability Breakdown</div>
+    <div class="vuln-row"><span class="vuln-label">Web & API Flaws</span><div class="vuln-bar"><div class="vuln-fill" style="width:47%; background: linear-gradient(90deg,#10b981,#3b82f6);"></div></div><span class="vuln-count">142</span></div>
+    <div class="vuln-row"><span class="vuln-label">Mobile Vulnerabilities</span><div class="vuln-bar"><div class="vuln-fill" style="width:32%; background: linear-gradient(90deg,#3b82f6,#818cf8);"></div></div><span class="vuln-count">98</span></div>
+    <div class="vuln-row"><span class="vuln-label">Business Logic Issues</span><div class="vuln-bar"><div class="vuln-fill" style="width:20%; background: #f97316;"></div></div><span class="vuln-count">60+</span></div>
+    <div class="vuln-row"><span class="vuln-label">Source Code Bugs</span><div class="vuln-bar"><div class="vuln-fill" style="width:14%; background: #ef4444;"></div></div><span class="vuln-count">42</span></div></div></div></div></section>
+
+  <section id="expertise" class="section"><div class="container"><div class="section-badge">Credentials</div><h2 class="section-title">Elite <span class="gradient-text">Certifications</span> & Deep Expertise</h2><p class="section-subtitle">Our team holds the industry's most respected offensive security credentials.</p>
+    <div style="display:flex; gap:1rem; flex-wrap:wrap; margin:2rem 0;"><div class="cert-tag" style="background:var(--grad); color:white; border:none;"><i class="fas fa-certificate"></i> EWPTX Certified</div><div class="cert-tag" style="background:var(--grad); color:white; border:none;"><i class="fas fa-shield-alt"></i> CEH v12</div><div class="cert-tag" style="background:var(--grad); color:white; border:none;"><i class="fas fa-mobile-alt"></i> Mobile Expert</div></div>
+    <div class="expertise-grid"><div class="expert-card"><div class="expert-icon"><i class="fas fa-magnifying-glass"></i></div><div class="expert-title">Manual-First Testing</div><p class="expert-text">Automated tools find ~40% of vulnerabilities. Our experts find the rest — business logic flaws and chained attacks.</p></div>
+    <div class="expert-card"><div class="expert-icon"><i class="fas fa-file-signature"></i></div><div class="expert-title">Zero False-Positive SLA</div><p class="expert-text">Every finding includes a working proof-of-concept. We contractually guarantee zero false positives.</p></div>
+    <div class="expert-card"><div class="expert-icon"><i class="fas fa-handshake"></i></div><div class="expert-title">Full Remediation Support</div><p class="expert-text">Developer walkthroughs, fix validation, and post-remediation retesting — all included.</p></div></div></div></section>
+
+  <div class="compliance-bar"><div class="compliance-wrap"><span class="compliance-label">ALIGNED WITH</span><div class="compliance-list"><span class="compliance-item">OWASP</span><span class="compliance-item">NIST</span><span class="compliance-item">PCI-DSS</span><span class="compliance-item">ISO 27001</span><span class="compliance-item">GDPR</span><span class="compliance-item">HIPAA</span><span class="compliance-item">SOC 2</span></div></div></div>
+
+  <section class="section"><div class="container"><div class="section-badge">Methodology</div><h2 class="section-title">Our <span class="gradient-text">Process</span></h2><p class="section-subtitle">A structured engagement model that eliminates ambiguity at every stage.</p>
+  <div class="process-steps"><div class="process-step"><div class="step-number">01</div><div class="step-title">Scoping</div><div class="step-desc">Define attack surface</div></div><div class="process-step"><div class="step-number">02</div><div class="step-title">Recon</div><div class="step-desc">Map entry points</div></div><div class="process-step"><div class="step-number">03</div><div class="step-title">Assessment</div><div class="step-desc">Deep manual testing</div></div><div class="process-step"><div class="step-number">04</div><div class="step-title">Reporting</div><div class="step-desc">PoC & fix guidance</div></div><div class="process-step"><div class="step-number">05</div><div class="step-title">Remediation</div><div class="step-desc">Re-test & validation</div></div></div></div></section>
+
+  <section id="contact" class="section"><div class="container"><div class="section-badge">Get In Touch</div><h2 class="section-title">Let's <span class="gradient-text">Secure</span> Your Future</h2><p class="section-subtitle">A senior security consultant will respond within 4 hours. No sales scripts.</p>
+  <div class="contact-grid"><div><div class="contact-card"><div class="contact-icon"><i class="fas fa-map-marker-alt"></i></div><div><div class="stat-label" style="font-size:0.7rem;">Headquarters</div><div><strong>Austin, TX / Bangalore, India</strong></div></div></div>
+  <div class="contact-card"><div class="contact-icon"><i class="fas fa-envelope"></i></div><div><div class="stat-label" style="font-size:0.7rem;">Email</div><div><strong>security@threox.com</strong></div></div></div>
+  <div class="contact-card"><div class="contact-icon"><i class="fas fa-phone"></i></div><div><div class="stat-label" style="font-size:0.7rem;">Emergency Hotline</div><div><strong>+1 (888) 234-VAPT</strong></div></div></div></div>
+  <div class="form-card"><h3 style="margin-bottom:0.5rem;">Request a Consultation</h3><p style="font-size:0.8rem; color:var(--gray-600); margin-bottom:1.5rem;">Tell us about your environment and we'll tailor a proposal.</p>
+  <form id="contactForm" novalidate>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Full Name *</label>
+        <input type="text" id="fullName" name="fullName" required placeholder="John Doe" />
+        <div class="error-msg">Please enter your full name.</div>
+      </div>
+      <div class="form-group">
+        <label>Business Email *</label>
+        <input type="email" id="email" name="email" required placeholder="john@company.com" />
+        <div class="error-msg">Please enter a valid email address.</div>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Company</label>
+        <input type="text" id="company" name="company" placeholder="Acme Inc." />
+        <div class="error-msg">Please enter your company name.</div>
+      </div>
+      <div class="form-group">
+        <label>Phone</label>
+        <input type="tel" id="phone" name="phone" placeholder="+1 (555) 000-0000" />
+        <div class="error-msg">Please enter a valid phone number.</div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Service Required *</label>
+      <select id="service" name="service" required>
+        <option value="">Select a service...</option>
+        <option value="Web Application VAPT">Web Application VAPT</option>
+        <option value="API Security Testing">API Security Testing</option>
+        <option value="Android / iOS VAPT">Android / iOS VAPT</option>
+        <option value="Source Code Review">Source Code Review</option>
+        <option value="Cloud Security Assessment">Cloud Security Assessment</option>
+        <option value="Network Penetration Testing">Network Penetration Testing</option>
+      </select>
+      <div class="error-msg">Please select a service.</div>
+    </div>
+    <div class="form-group">
+      <label>Security Needs</label>
+      <textarea id="message" name="message" rows="3" placeholder="Describe your stack, environment, and specific security concerns..."></textarea>
+      <div class="error-msg">Please describe your security requirements.</div>
+    </div>
+    <button type="submit" class="submit-btn" id="submitBtn">
+      <i class="fas fa-lock"></i> Submit Secure Inquiry
+    </button>
+  </form></div></div></div></section>
+</main>
+
+<footer class="footer"><div class="footer-container"><div class="footer-grid"><div class="footer-logo"><a href="#" class="logo"><img src="solo_logo.jpeg" alt="Threox" class="logo-mark-img" style="height:36px;"><img src="white_text.png" alt="Threox" class="logo-text-img" style="height:28px;"></a><p>Next-generation VAPT & security assurance. EWPTX | CEH v12 certified.</p></div>
+<div class="footer-col"><h4>Services</h4><ul><li><a href="#services">Web App VAPT</a></li><li><a href="#services">API Security</a></li><li><a href="#services">Mobile VAPT</a></li><li><a href="#services">Source Code Review</a></li></ul></div>
+<div class="footer-col"><h4>Company</h4><ul><li><a href="#impact">Case Studies</a></li><li><a href="#contact">Contact</a></li><li><a href="#">Careers</a></li></ul></div>
+<div class="footer-col"><h4>Legal</h4><ul><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms of Service</a></li><li><a href="#">GDPR / CCPA</a></li></ul></div></div>
+<div class="footer-bottom"><span>© 2025 <span style="color:var(--green);">Threox Security</span> — All rights reserved.</span><div class="social-links"><a href="#"><i class="fab fa-linkedin-in"></i></a><a href="#"><i class="fab fa-x-twitter"></i></a><a href="#"><i class="fab fa-github"></i></a></div></div></div></footer>
+
+<!-- Toast Notification -->
+<div class="toast" id="toast">
+  <i class="fas fa-check-circle"></i>
+  <span id="toastMsg">Success!</span>
+</div>
+
+<!-- FIREBASE SDK -->
+<script type="importmap">
+{
+  "imports": {
+    "firebase/app": "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js",
+    "firebase/database": "https://www.gstatic.com/firebasejs/11.0.0/firebase-database.js"
+  }
+}
+</script>
+
+<script type="module">
+// ================================================================
+// FIREBASE CONFIGURATION
+// ================================================================
+const firebaseConfig = {
+    apiKey: "AIzaSyCgC4bUGN2XajhVvHHyYf-qxzgvy-nmyY8",
+    authDomain: "admin-6df50.firebaseapp.com",
+    databaseURL: "https://admin-6df50-default-rtdb.firebaseio.com",
+    projectId: "admin-6df50",
+    storageBucket: "admin-6df50.firebasestorage.app",
+    messagingSenderId: "273989159024",
+    appId: "1:273989159024:web:d584cc68ef633cab5b8cb5"
+};
+
+// ================================================================
+// IMPORTS
+// ================================================================
+import { initializeApp } from 'firebase/app';
+import { getDatabase, ref, push, set, serverTimestamp } from 'firebase/database';
+
+// ================================================================
+// INIT FIREBASE
+// ================================================================
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+console.log('🔥 Firebase initialized successfully.');
+
+// ================================================================
+// DOM REFS
+// ================================================================
+const form = document.getElementById('contactForm');
+const submitBtn = document.getElementById('submitBtn');
+
+// ================================================================
+// TOAST NOTIFICATION
+// ================================================================
+function showToast(message, isError = false) {
+    const toast = document.getElementById('toast');
+    const toastMsg = document.getElementById('toastMsg');
+    if (!toast || !toastMsg) return;
+    
+    toastMsg.textContent = message;
+    toast.className = 'toast show' + (isError ? ' error' : '');
+    clearTimeout(toast._timeout);
+    toast._timeout = setTimeout(() => {
+        toast.classList.remove('show');
+    }, 5000);
+}
+
+// ================================================================
+// VALIDATION FUNCTIONS
+// ================================================================
+function validateField(input) {
+    const group = input.closest('.form-group');
+    if (!group) return true;
+    const error = group.querySelector('.error-msg');
+    if (!error) return true;
+
+    let valid = true;
+    const val = input.value.trim();
+
+    if (input.hasAttribute('required') && !val) {
+        valid = false;
+    }
+
+    if (input.type === 'email' && val) {
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!emailRegex.test(val)) valid = false;
+    }
+
+    if (input.id === 'phone' && val) {
+        const phoneRegex = /^[\+\d\s\-\(\)]{7,20}$/;
+        if (!phoneRegex.test(val)) valid = false;
+    }
+
+    if (input.tagName === 'SELECT' && input.hasAttribute('required')) {
+        if (!val || val === '') valid = false;
+    }
+
+    group.classList.toggle('error', !valid);
+    return valid;
+}
+
+// Real-time validation
+form.querySelectorAll('input, select, textarea').forEach(el => {
+    el.addEventListener('blur', () => validateField(el));
+    el.addEventListener('input', () => {
+        if (el.closest('.form-group')?.classList.contains('error')) {
+            validateField(el);
+        }
+    });
+    el.addEventListener('change', () => validateField(el));
+});
+
+// ================================================================
+// FORM SUBMIT HANDLER
+// ================================================================
+form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    // Validate all required fields
+    let allValid = true;
+    form.querySelectorAll('input[required], select[required], textarea[required]').forEach(el => {
+        if (!validateField(el)) allValid = false;
+    });
+
+    if (!allValid) {
+        showToast('⚠️ Please fix all errors before submitting.', true);
+        return;
+    }
+
+    // Gather form data
+    const formData = {
+        fullName: document.getElementById('fullName').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        company: document.getElementById('company').value.trim() || '',
+        phone: document.getElementById('phone').value.trim() || '',
+        service: document.getElementById('service').value,
+        message: document.getElementById('message').value.trim() || '',
+        timestamp: serverTimestamp()
+    };
+
+    // Disable submit button
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+
+    try {
+        // Push to Firebase Realtime Database
+        const contactRef = ref(db, 'contactForm');
+        const newRef = push(contactRef);
+        await set(newRef, formData);
+
+        showToast('✅ Inquiry submitted successfully! We\'ll get back to you soon.');
+        form.reset();
+        form.querySelectorAll('.form-group').forEach(g => g.classList.remove('error'));
+
+        console.log('✅ Data saved to Firebase:', formData);
+
+    } catch (error) {
+        console.error('❌ Firebase submission error:', error);
+        showToast('❌ Submission failed. Please try again later.', true);
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-lock"></i> Submit Secure Inquiry';
+    }
+});
+
+console.log('🚀 Threox - Contact Form Connected to Firebase');
+console.log('📡 Database Path: contactForm/');
+</script>
+
+<!-- Non-module scripts -->
+<script>
+// Navbar scroll
+window.addEventListener('scroll', () => document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 20));
+
+// Mobile menu
+const menuBtn = document.getElementById('menuBtn'), navLinksEl = document.getElementById('navLinks');
+menuBtn.addEventListener('click', () => navLinksEl.classList.toggle('open'));
+document.querySelectorAll('.nav-links a').forEach(link => link.addEventListener('click', () => navLinksEl.classList.remove('open')));
+
+// Smooth scroll
+document.querySelectorAll('a[href^="#"]').forEach(anchor => anchor.addEventListener('click', function(e) { 
+    const target = document.querySelector(this.getAttribute('href')); 
+    if(target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth' }); } 
+}));
+
+// Counter animation
+const counters = document.querySelectorAll('.counter-number');
+const counterObserver = new IntersectionObserver((entries) => { 
+    entries.forEach(entry => { 
+        if(entry.isIntersecting) { 
+            const el = entry.target; 
+            const target = parseInt(el.dataset.target); 
+            let current = 0; 
+            const increment = target / 50; 
+            const timer = setInterval(() => { 
+                current += increment; 
+                if(current >= target) { 
+                    el.textContent = target + (target === 98 ? '%' : (target === 300 || target === 142 ? '+' : '')); 
+                    clearInterval(timer); 
+                } else { 
+                    el.textContent = Math.floor(current) + (target === 98 ? '%' : (target === 300 || target === 142 ? '+' : '')); 
+                } 
+            }, 25); 
+            counterObserver.unobserve(el); 
+        } 
+    }); 
+}, { threshold: 0.5 });
+counters.forEach(c => counterObserver.observe(c));
+
+// Reveal animation
+const reveals = document.querySelectorAll('.service-card, .expert-card, .process-step, .contact-card');
+const revealObserver = new IntersectionObserver((entries) => { 
+    entries.forEach(e => { 
+        if(e.isIntersecting) e.target.classList.add('visible'); 
+    }); 
+}, { threshold: 0.1 });
+reveals.forEach(el => { 
+    el.classList.add('reveal'); 
+    revealObserver.observe(el); 
+});
+
+// Video autoplay
+const video = document.getElementById('bgVideo');
+if(video) { 
+    video.play().catch(() => { 
+        document.body.addEventListener('click', () => video.play(), { once: true }); 
+    }); 
+}
+</script>
+
+</body>
+</html>
